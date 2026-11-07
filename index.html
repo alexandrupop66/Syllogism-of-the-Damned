@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101015" />
+  <meta name="description" content="Syllogism of the Damned: an impossible bureaucratic nightmare. Your application is not what it seems." />
+  <title>Syllogism of the Damned | Bureau of Impossible Affairs</title>
+  <link rel="stylesheet" href="src/styles.css" />
+  <script type="module" src="src/app.js"></script>
+</head>
+<body data-act="form">
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="chrome-bar">
+    <a class="wordmark" href="./" aria-label="Syllogism of the Damned, start page"><span class="crest-mini">✳</span><span>SYLLOGISM<span class="wordmark-light"> / OF THE DAMNED</span></span></a>
+    <div class="chrome-right"><span class="chrome-led"></span><span class="chrome-signal" id="signal">SYSTEM STABLE</span><span class="chrome-separator">/</span><span class="version">CASE NO. 001</span></div>
+  </header>
+
+  <main class="stage" id="stage">
+    <section class="act act-form" id="formAct" aria-labelledby="formTitle">
+      <div class="paper-edge paper-edge-top" aria-hidden="true"></div>
+      <div class="paper-head"><span>THE CENTRAL REGISTRY</span><span>FORM 0–∞ / REV. 13</span></div>
+      <div class="paper-inner">
+        <div class="paper-left">
+          <div class="chapter-label"><span class="bar"></span> OFFICIAL DOCUMENT · CLASSIFIED AS ORDINARY</div>
+          <h1 id="formTitle">An application<br />to <em>exist.</em></h1>
+          <p class="paper-intro">Every person must be registered.<br />Every registration must be approved.<br />Every approval must make sense.</p>
+          <form id="applicationForm" novalidate>
+            <label for="applicantName">01 &nbsp; YOUR LEGAL NAME <span class="asterisk">*</span></label>
+            <div class="input-wrap"><input type="text" id="applicantName" name="name" autocomplete="off" maxlength="32" placeholder="Enter your name" required aria-describedby="nameError"/><span class="input-glyph" aria-hidden="true">↗</span></div>
+            <p id="nameError" class="validation" role="alert" aria-live="polite"></p>
+            <button type="submit" class="primary-button" id="submitApplication"><span>SUBMIT APPLICATION</span><span class="btn-arrow">↗</span></button>
+          </form>
+          <p class="form-footnote"><span aria-hidden="true">✳</span> You are legally required to be yourself.</p>
+        </div>
+        <div class="paper-right" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="eye-mark"><svg viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 70C56 13 144 13 191 70C144 127 56 127 9 70Z" stroke="currentColor" stroke-width="1.8"/><circle cx="100" cy="70" r="38" stroke="currentColor" stroke-width="1.4"/><circle cx="100" cy="70" r="16" fill="currentColor"/><path d="M100 1V29M100 111V139M1 70H29M171 70H199" stroke="currentColor" stroke-width="1.4"/><path d="M50 19L62 35M138 105L150 121M150 19L138 35M62 105L50 121" stroke="currentColor" stroke-width="1.2"/></svg></div>
+          <div class="stamp"><span>STATUS</span><strong>PENDING</strong><small>PRIOR TO EXISTENCE</small></div>
+        </div>
+      </div>
+      <div class="paper-bottom"><span>DEPARTMENT OF IMPOSSIBLE AFFAIRS</span><span>YOUR COMPLIANCE IS APPRECIATED.</span></div>
+    </section>
+
+    <section class="act act-fracture" id="fractureAct" hidden aria-labelledby="fractureTitle">
+      <div class="fracture-grain" aria-hidden="true"></div>
+      <div class="fracture-layout">
+        <div class="fracture-copy">
+          <div class="kicker kicker-alert"><span class="alert-dot"></span> ERROR 000: REALITY NOT FOUND</div>
+          <h2 id="fractureTitle">Your form<br />has <em>escaped.</em></h2>
+          <p>It took your name. It broke its own rules.<br />Now the evidence is loose.</p>
+          <div class="instructions"><span class="instructions-index">YOUR TASK / 01</span><strong>Return the three missing pieces.</strong><span>Drag each fragment to its matching outline, or simply tap it.</span></div>
+          <div class="progress" aria-label="Pieces recovered"><span>REASSEMBLY PROGRESS</span><strong><span id="progressNumber">0</span> / 3</strong></div>
+          <div class="progress-track" aria-hidden="true"><span id="progressFill"></span></div>
+        </div>
+        <div class="fracture-world" id="fractureWorld">
+          <div class="world-rings" aria-hidden="true"><div class="world-ring ring-a"></div><div class="world-ring ring-b"></div><div class="world-ring ring-c"></div></div>
+          <div class="seal-heading"><span>THE BUREAU OF</span><strong>ABSURD EVIDENCE</strong></div>
+          <div class="sockets" aria-label="Evidence sockets">
+            <div class="socket" data-socket="identity"><span class="socket-number">I</span><span class="socket-art" aria-hidden="true">◇</span><span class="socket-label">IDENTITY</span><span class="socket-check" aria-hidden="true">✓</span></div>
+            <div class="socket" data-socket="consent"><span class="socket-number">II</span><span class="socket-art" aria-hidden="true">⌑</span><span class="socket-label">CONSENT</span><span class="socket-check" aria-hidden="true">✓</span></div>
+            <div class="socket" data-socket="authority"><span class="socket-number">III</span><span class="socket-art" aria-hidden="true">△</span><span class="socket-label">AUTHORITY</span><span class="socket-check" aria-hidden="true">✓</span></div>
+          </div>
+          <div class="fragment-field" id="fragmentField" aria-label="Form fragments">
+            <button type="button" class="fragment" data-piece="identity" aria-label="Return identity fragment"><small>FIELD / 001</small><strong id="identityText">APPLICANT</strong><span>THE NAME YOU WERE GIVEN</span></button>
+            <button type="button" class="fragment" data-piece="consent" aria-label="Return consent fragment"><small>CHECKBOX / 002</small><strong>☑ I AGREE</strong><span>TERMS NOT DISCLOSED</span></button>
+            <button type="button" class="fragment" data-piece="authority" aria-label="Return authority fragment"><small>BUTTON / 003</small><strong>APPROVE ↗</strong><span>AUTHORITY UNDEFINED</span></button>
+          </div>
+          <div class="world-caption" id="worldCaption">EVIDENCE IS OUTSIDE ITS APPROVED POSITION.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="act act-verdict" id="verdictAct" hidden aria-labelledby="verdictTitle">
+      <div class="verdict-backdrop" aria-hidden="true"></div>
+      <div class="verdict-copy">
+        <div class="kicker">DECISION NOTICE / FINAL</div>
+        <p class="verdict-subject">RE: <span id="verdictName">APPLICANT</span></p>
+        <h2 id="verdictTitle">You have been<br /><em>approved.</em></h2>
+        <p>Unfortunately, the universe has filed an objection.</p>
+        <button type="button" id="openDoorButton" class="door-button"><span>OVERRIDE THE VERDICT</span><span aria-hidden="true">↗</span></button>
+        <div class="verdict-smallprint">THIS DECISION IS FINAL UNTIL IT ISN'T.</div>
+      </div>
+      <div class="door-scene" aria-hidden="true"><div class="door-glow"></div><div class="door-frame"><div class="door-panel"><span>EXIT</span><span class="door-knob"></span></div></div><div class="door-floor"></div></div>
+      <div class="verdict-stamp" aria-hidden="true">APPROVED</div>
+    </section>
+
+    <section class="act act-escaped" id="escapedAct" hidden aria-labelledby="escapedTitle">
+      <div class="escape-halo" aria-hidden="true"></div>
+      <div class="escape-content"><div class="kicker kicker-escaped">SYSTEM STATUS / IRRELEVANT</div><span class="escape-symbol" aria-hidden="true">✳</span><h2 id="escapedTitle">You are <em>not</em><br />a form.</h2><p>Congratulations, <span id="escapeName">APPLICANT</span>.<br />Your existence has been returned to you.</p><button type="button" class="replay-button" id="restartButton">TRY EXISTING AGAIN <span aria-hidden="true">↗</span></button></div>
+    </section>
+  </main>
+  <footer class="bottom-bar"><span>NO. 001 / SYLLOGISM OF THE DAMNED</span><span id="statusText" aria-live="polite" role="status">Awaiting applicant.</span><button id="resetAnytime" class="text-reset" type="button" hidden>START OVER ↺</button></footer>
+</body>
+</html>
