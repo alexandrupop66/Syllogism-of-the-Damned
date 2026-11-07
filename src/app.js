@@ -1,4 +1,5 @@
 import { initialState, submitName, placePiece, openDoor, restart, safeLabel } from './engine.mjs';
+import { animateFormToPuzzle } from './metamorphosis.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 const app = { state: initialState(), pending: false };
@@ -36,8 +37,9 @@ function render() {
   $('#worldCaption').textContent = words[state.collected.length];
 }
 
-$('#applicationForm').addEventListener('submit', (event) => {
+$('#applicationForm').addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (app.pending) return;
   const next = submitName(app.state, $('#applicantName').value);
   if (next.act === 'form') {
     $('#nameError').textContent = next.message;
@@ -46,15 +48,25 @@ $('#applicationForm').addEventListener('submit', (event) => {
   }
   $('#nameError').textContent = '';
   app.pending = true;
-  $('#stage').classList.add('rupture');
-  window.setTimeout(() => {
-    app.pending = false;
+  $('#submitApplication').disabled = true;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try {
+    if (!reduced) {
+      await animateFormToPuzzle({
+        stage: $('#stage'), form: $('#formAct'), fracture: $('#fractureAct'), name: next.name
+      });
+    }
+  } catch (error) {
+    // Animation errors cannot block access to the actual puzzle.
+    console.warn('Transition unavailable; opening puzzle without animation.', error);
+  } finally {
     app.state = next;
-    $('#stage').classList.remove('rupture');
+    app.pending = false;
+    $('#submitApplication').disabled = false;
     render();
-    $('#fractureTitle').setAttribute('tabindex','-1');
+    $('#fractureTitle').setAttribute('tabindex', '-1');
     $('#fractureTitle').focus({ preventScroll: true });
-  }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 390);
+  }
 });
 
 function recover(id) {
@@ -117,6 +129,7 @@ $('#openDoorButton').addEventListener('click', () => {
 });
 function resetAll() {
   app.state=restart(); app.pending=false;
+  $('#fractureAct').classList.remove('entered-from-form');
   $('#applicantName').value=''; $('#nameError').textContent='';
   for (const button of document.querySelectorAll('[data-piece]')) { button.classList.remove('just-recovered'); button.style.transform=''; delete button.dataset.preventClick; }
   render(); $('#applicantName').focus({preventScroll:true});
