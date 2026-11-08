@@ -1,24 +1,20 @@
-# Design contract
+# Syllogism v0.3 / design contract
 
-## Core hook (first 30 seconds)
-0–6 s: apparently innocent application form. 6–10 s: form submits, loses coherence and cracks into a haunted scene. 10–22 s: visitor moves the three former controls into evidence sockets; each action transforms the room. 22–30 s: verdict is issued and an impossible door opens.
+## Hook (first 30 seconds)
+0–5s: quiet, high-quality paper form. 5–8s: the actual document shatters into 32 moving visual pieces. 8–17s: the two laws are visible; visitor selects the word NOT and places it into the empty declaration. 17–24s: the room reconfigures, the portal opens. 24–30s: visitor enters the exit and sees the ending.
 
-## Four acts
-- FORM: warm paper / clean typography / one input / one CTA.
-- FRACTURE: the document turns into a dark, dimensional evidence room. Form controls become the puzzle pieces.
-- VERDICT: all three fragments acknowledged; oversized official stamp and a glowing doorway.
-- ESCAPED: short punchline, restart.
+## Single mechanic
+Text is physical law. There is exactly one puzzle. Its input is the word NOT, moved from "YOU ARE NOT AUTHORISED TO LEAVE" to "I DO [ ] ACCEPT THE TERMS". There are 32 decorative panels, but zero obligation to chase those pieces.
 
-## Visual rules
-A single stage without nested scrolling on desktop. Strong headline hierarchy and 16px+ main text. Restrained crimson accents; green only for successful progress. No arbitrary jump scares. Use original CSS/SVG visuals and small deterministic motion, not ornamental AI.
+## Architecture
+- Pure state machine in `src/engine.mjs` is the source of truth for whether a rule has been rewritten and the exit is unlocked.
+- `src/architecture.mjs`: pure geometry for 32 pieces; visual objects are inert and aria-hidden.
+- `src/metamorphosis.mjs`: clone and slice the real document, with duplicate IDs removed and inputs disabled. Capture destination boxes **after** making the chamber measurable. Clean up all flights after completion or failure. Reduced motion immediately reveals the puzzle.
+- `src/app.js`: keyboard, mouse, pointer, focus transfer, hints, reset. Must never write name data into innerHTML.
+- CSS 2.5D world and transitions are presentational only. They cannot grant gameplay state.
 
-## Constraints
-A static app with a pure state-machine module; no frameworks, no external requests, no secret material. User input must never be injected into innerHTML. Avoid untestable claims of Kiro runtime orchestration: hooks apply to development sessions, not directly to runtime keystrokes.
+## Safety, UX and testability
+Focus visibility, target highlights, clear feedback after invalid actions, Enter/Space/escape keys and mobile tap fallback. Keep desktop scroll-free. All source and assets must be local. Do not invent AI runtime, cloud, or Kiro hooks controlling user keystrokes.
 
-## v0.2: material continuity (one trick, not another screen)
-- Source mapping: name input → IDENTITY; form footnote → CONSENT; submit button → AUTHORITY.
-- Snapshot source bounding boxes before revealing the dark scene; reveal the target scene without affecting the form layout. Use a single inert, aria-hidden ghost layer to move a visual clone of each control to its existing target fragment.
-- The pure `planFlight()` helper calculates destination delta and scale from real DOM rectangles. Test failure conditions separately.
-- No ghost is focusable, and user text stays in `textContent` or a disabled clone input, never interpolated into HTML.
-- On animation failure, switch to the real playable puzzle rather than trapping the user. Reduced-motion users transition instantly.
-- v0.1 remains stable; no additional external packages, calls or services.
+## Release control
+v0.1 on `main`; v0.2 on `feature/syllogism-metamorphosis-v0.2`; v0.3 on new feature branch. Never merge/deploy without separate approval. Use genuine Kiro IDE/CLI before claiming actual Kiro usage.
