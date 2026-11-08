@@ -1,20 +1,20 @@
-# Experience requirements (Kiroween 2026)
+# Syllogism of the Damned / v0.3 experience requirements
 
-Status: approved scope for initial prototype; Kiro execution evidence pending.
+Status: user approved this scope on 08/11/2026. Real Kiro IDE/CLI execution evidence remains pending.
 
-## User story
-As a first-time visitor, I enter a name into an apparently bureaucratic form. After submission, the form itself mutates into a surreal, physical-feeling puzzle. I can recover its fragments and escape, without instructions, accounts, or scrolling on a standard desktop screen.
+## Central user story
+As a first-time visitor, I submit a fictional identity, watch the original document disintegrate into an impossible chamber, and escape by moving exactly one word between two written rules. I should never have to guess what control to use, and should never need to collect dozens of decorative objects.
 
 ## Acceptance criteria
-1. Form state is immediately comprehensible and has a single name field.
-2. Names shorter than 2 characters cannot enter the puzzle. Input is rendered as text, never raw HTML.
-3. On accepted input, the interface transforms and the objective appears in the same viewport.
-4. The three distinct puzzle pieces can be placed by pointer, click, keyboard, or touch, with visible progress and individual feedback.
-5. A piece cannot be counted more than once; an unknown piece has no effect.
-6. Final door is actionable only after all pieces are recovered.
-7. Restart restores initial state without storing user data.
-8. Desktop 1366x768 has no nested scroll; small viewports remain usable.
-9. Reduced-motion preference is respected; no flashing seizure-like effects.
-10. No network calls, paid APIs, telemetry, or automatic deployment.
-11. Test positive, negative, duplicate and invalid state transitions. Verify the final shipped version.
-12. Genuine Kiro usage must be separately established before claiming compliance.
+1. One input on the original form. Invalid or short input cannot advance.
+2. The submitted form itself breaks into 20–40 visible pieces, which reconstruct decorative elements in the chamber. v0.3 uses 32 (8×4).
+3. Exactly one active puzzle: remove **NOT** from "YOU ARE NOT AUTHORISED TO LEAVE" and place it in "I DO [ ] ACCEPT THE TERMS".
+4. The exit remains locked until valid user input moves the word. An invalid drop or unselected destination click must not change the rule.
+5. Control affordances, a clear goal and local hints permit solving without guessing or narration. Mouse, keyboard and touch are supported.
+6. A valid move changes both sentences visibly and triggers a room-scale transformation (walls, light and exit). An actionable door is revealed in the same scene.
+7. Reset and replay restore the initial state without persisting user input. Names are text-only, not HTML.
+8. No desktop page or nested scroll at 1366×768 or 1024×768. Small mobile scroll is acceptable if the primary puzzle and instructions stay visible and no horizontal scrolling occurs.
+9. Reduced-motion users retain the full gameplay and do not see compulsory high-motion effects.
+10. No external network connections, paid services, dependency upgrades, deployment or unapproved architecture additions.
+11. Unit, positive, negative, keyboard, drag, mobile, reduced-motion and replay cases must be tested. Do not claim a deployed URL was validated from an isolated harness.
+12. Actual Kiro usage must be evidenced separately; `.kiro` content alone does not satisfy it.
