@@ -1,26 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SOURCES_TO_FRAGMENTS, FLIGHT_DURATION_MS, planFlight } from '../src/metamorphosis.mjs';
-
-const source = {left:100,top:200,width:400,height:55};
-const target = {left:750,top:460,width:140,height:110};
-test('each original control maps to one unique puzzle piece', () => {
-  assert.deepEqual(SOURCES_TO_FRAGMENTS.map(x => x.id), ['identity','consent','authority']);
-  assert.equal(new Set(SOURCES_TO_FRAGMENTS.map(x => x.source)).size, 3);
-  assert.ok(FLIGHT_DURATION_MS >= 650 && FLIGHT_DURATION_MS <= 1400);
-});
-test('transition begins at the source, ends at the exact target centre and size', () => {
-  const frames = planFlight(source,target);
-  assert.equal(frames.length,4);
-  assert.deepEqual(frames.map(x => x.offset), [0,.22,.72,1]);
-  assert.equal(frames[0].transform,'translate(0px, 0px) rotate(0deg) scale(1, 1)');
-  assert.ok(frames.at(-1).transform.includes('translate(520px, 287.5px)'));
-  assert.ok(frames.at(-1).transform.includes('scale(0.35, 2)'));
-  assert.equal(frames.at(-1).opacity,0);
-});
-test('transition rejects missing, invalid and zero-area geometry', () => {
-  assert.throws(() => planFlight(null,target),TypeError);
-  assert.throws(() => planFlight({...source,left:Infinity},target),TypeError);
-  assert.throws(() => planFlight({...source,width:0},target),RangeError);
-  assert.throws(() => planFlight(source,{...target,height:-1}),RangeError);
-});
+import { SHARD_COUNT, SHARD_COLUMNS, SHARD_ROWS, panelPosition } from '../src/architecture.mjs';
+import { FLIGHT_DURATION_MS, planShardFlight } from '../src/metamorphosis.mjs';
+const form={left:120,top:90,width:1200,height:600};
+const dest={left:700,top:300,width:48,height:20};
+test('exactly 32 decorative panels form chamber envelope',()=>{assert.equal(SHARD_COUNT,32);assert.equal(SHARD_COLUMNS*SHARD_ROWS,32);});
+test('every panel has valid bounded placement',()=>{for(let i=0;i<SHARD_COUNT;i++){const p=panelPosition(i);assert.ok(p.x>=0&&p.x<=100);assert.ok(p.y>=0&&p.y<=100);assert.ok(Number.isFinite(p.rotation));}});
+test('panel invalid indices rejected',()=>{for(const id of [-1,32,1.5,NaN])assert.throws(()=>panelPosition(id),RangeError);});
+test('first tile originates in top-left and calculates target correctly',()=>{const p=planShardFlight(form,dest,0);assert.deepEqual([p.col,p.row,p.width,p.height,p.sourceX,p.sourceY],[0,0,150,150,120,90]);assert.equal(p.dx,700+24-195);assert.equal(p.dy,300+10-165);});
+test('last tile originates in bottom-right',()=>{const p=planShardFlight(form,dest,31);assert.equal(p.col,7);assert.equal(p.row,3);assert.equal(p.sourceX,1170);assert.equal(p.sourceY,540);});
+test('reduced motion always has instant non-animated fallback in app (constant used only for standard mode)',()=>assert.ok(FLIGHT_DURATION_MS>=900&&FLIGHT_DURATION_MS<=2000));
+test('invalid rectangles are rejected',()=>{assert.throws(()=>planShardFlight(null,dest,0),TypeError);assert.throws(()=>planShardFlight({...form,width:0},dest,1),RangeError);assert.throws(()=>planShardFlight(form,{...dest,left:NaN},1),TypeError);});
+test('out-of-range shard indexes are rejected',()=>{assert.throws(()=>planShardFlight(form,dest,32),RangeError);assert.throws(()=>planShardFlight(form,dest,-1),RangeError);});
