@@ -1,46 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanName, validateName, initialState, submitName, placePiece, openDoor, restart, safeLabel, PIECE_IDS } from '../src/engine.mjs';
+import { cleanName, validateName, initialState, submitName, selectWord, rewriteRule, enterExit, restart, safeLabel, RULE_WORD } from '../src/engine.mjs';
 
-test('initial state is the form with empty progress', () => {
-  assert.deepEqual(initialState(), { act: 'form', name: '', collected: [], message: 'Awaiting applicant.' });
-});
-test('names are trimmed, compacted and bounded', () => {
-  assert.equal(cleanName('   Ada   Lovelace  '), 'Ada Lovelace');
-  assert.equal(cleanName('x'.repeat(100)).length, 32);
-});
-test('control characters removed', () => assert.equal(cleanName('Al\u0000ex\n'), 'Alex'));
-test('non-string names fail closed', () => assert.equal(cleanName(null), ''));
-test('empty name produces safe validation message', () => assert.match(validateName(' ' ).error, /two characters/));
-test('too-short name does not advance the act', () => assert.equal(submitName(initialState(),'a').act,'form'));
-test('valid name starts fracture', () => {
-  const result=submitName(initialState(), 'Alex');
-  assert.equal(result.act, 'fracture');
-  assert.equal(result.name, 'Alex');
-});
-test('submission cannot be repeated during fracture', () => {
-  const state=submitName(initialState(), 'Alex');
-  assert.equal(submitName(state,'Different'), state);
-});
-test('only known pieces can be placed', () => {
-  const state=submitName(initialState(), 'Alex');
-  assert.equal(placePiece(state, 'undefined'), state);
-});
-test('duplicate piece cannot be counted twice', () => {
-  const a=placePiece(submitName(initialState(),'Alex'), PIECE_IDS[0]);
-  assert.equal(placePiece(a, PIECE_IDS[0]), a);
-});
-test('all three unique pieces produce verdict', () => {
-  let a=submitName(initialState(), 'Alex');
-  for (const id of PIECE_IDS) a=placePiece(a,id);
-  assert.equal(a.act,'verdict');
-  assert.equal(a.collected.length,3);
-});
-test('door locked until verdict', () => assert.equal(openDoor(initialState()).act,'form'));
-test('door opens after verdict', () => {
-  let a=submitName(initialState(), 'Alex');
-  for (const id of PIECE_IDS) a=placePiece(a,id);
-  assert.equal(openDoor(a).act,'escaped');
-});
-test('restart returns clean state', () => assert.deepEqual(restart(), initialState()));
-test('safe label never returns empty text', () => assert.equal(safeLabel(''), 'APPLICANT'));
+const start = () => submitName(initialState(),'Avery');
+test('form is the only initial act; no rule is rewritten',()=>assert.deepEqual(initialState(),{act:'form',name:'',wordSelected:false,ruleRewritten:false,message:'Awaiting applicant.'}));
+test('word to be moved is NOT',()=>assert.equal(RULE_WORD,'NOT'));
+test('names are trimmed, whitespace collapsed, control chars removed',()=>assert.equal(cleanName('  Al\n\u0000ex    Test '),'Alex Test'));
+test('names bounded to 32 characters',()=>assert.equal(cleanName('x'.repeat(300)).length,32));
+test('non-string input fails closed',()=>assert.equal(cleanName(null),''));
+test('name must have two characters',()=>assert.match(validateName('A').error,/at least two/));
+test('invalid form cannot progress',()=>assert.equal(submitName(initialState(),'A').act,'form'));
+test('valid form enters the chamber, preserving name',()=>{const s=start();assert.equal(s.act,'fracture');assert.equal(s.name,'Avery');});
+test('cannot resubmit after entering chamber',()=>{const s=start();assert.equal(submitName(s,'Wrong'),s);});
+test('word cannot be selected on form',()=>{const s=initialState();assert.equal(selectWord(s),s);});
+test('selecting NOT changes one explicit state field',()=>{const s=selectWord(start());assert.equal(s.wordSelected,true);assert.equal(s.ruleRewritten,false);});
+test('selection toggles for correction/escape',()=>{const s=selectWord(selectWord(start()));assert.equal(s.wordSelected,false);});
+test('clicking slot before selecting NOT is rejected',()=>{const s=start();assert.equal(rewriteRule(s),s);});
+test('select+slot rewrites only once',()=>{const s=rewriteRule(selectWord(start()));assert.equal(s.ruleRewritten,true);assert.equal(s.wordSelected,false);assert.equal(rewriteRule(s),s);});
+test('a real drag can rewrite without prior selection',()=>assert.equal(rewriteRule(start(),'drag').ruleRewritten,true));
+test('unknown input method cannot rewrite',()=>{const s=selectWord(start());assert.equal(rewriteRule(s,'unknown'),s);});
+test('cannot open before law rewritten',()=>{const s=start();assert.equal(enterExit(s),s);});
+test('rewritten rule unlocks a single exit',()=>assert.equal(enterExit(rewriteRule(selectWord(start()))).act,'escaped'));
+test('cannot select after rule is rewritten',()=>{const s=rewriteRule(start(),'drag');assert.equal(selectWord(s),s);});
+test('escaped state is immutable to another exit',()=>{const s=enterExit(rewriteRule(start(),'drag'));assert.equal(enterExit(s),s);});
+test('restart clears all state after escaping',()=>assert.deepEqual(restart(),initialState()));
+test('name label cannot become HTML unless explicitly inserted unsafely elsewhere',()=>assert.equal(safeLabel('<script>alert(1)</script>'),'<script>alert(1)</script>'));
+test('fallback label for empty name',()=>assert.equal(safeLabel(''),'APPLICANT'));
