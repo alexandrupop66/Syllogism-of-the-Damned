@@ -1,28 +1,28 @@
 # Syllogism of the Damned
 
-A surreal browser experience where a routine application form transforms into an impossible bureaucratic puzzle.
+**A surreal, interactive browser game in which the words on a form control the laws of the room.**
 
-**Status:** v0.2 metamorphosis prototype on a separate branch; not submitted, not deployed.
+Kiroween 2026 · Costume Contest · 04/12/2026 22:00 GMT submission deadline.
 
-**Competition:** Kiroween 2026 · Costume Contest · Submission deadline 04 December 2026 22:00 GMT.
+**Current status:** v0.3 source prototype on a separate branch. It is not deployed or submitted. The `main` branch and the v0.2 branch remain separate.
 
-## Play
+## The 30-second idea
 
-1. Open the form and enter a fictional name (2–32 characters).
-2. Submit your application. Three actual form controls fly into the next scene: name → identity, footnote → consent, submit button → authority.
-3. Recover the three pieces by clicking/tapping or dragging each fragment to its matching evidence socket.
-4. Open the exit and see the ending. Replay is available.
+1. Enter a fictional name and submit a perfectly ordinary form.
+2. The actual document breaks into **32 visual pieces**. Those pieces travel into a chamber built from its own paper, borders and stamped rules.
+3. The Bureau says **YOU ARE NOT AUTHORISED TO LEAVE**, and your declaration says **I DO [ ___ ] ACCEPT THE TERMS**.
+4. Move the highlighted word **NOT** into the empty space, by dragging or selecting it and choosing the destination. Both statements change. The walls retreat, and a physical-feeling portal opens.
+5. Enter the exit and see the ending.
 
-The demo is deterministic: no AI backend, accounts, external API, telemetry, or user data transmission. The entered name remains in this browser session and is not stored.
+No accounts, APIs, telemetry, AI runtime, database or server are needed. The name is not persisted or transmitted.
 
-## Run locally
+## Run
 
-Requires a modern browser and Node >= 20 for tests.
+Use a modern Chromium, Firefox or Safari browser; Node.js >= 20 for the unit tests.
 
 ```bash
 python3 -m http.server 4173
-# open http://localhost:4173
-node --test tests/*.test.mjs
+# browse http://localhost:4173
 ```
 
 Windows PowerShell:
@@ -31,30 +31,48 @@ Windows PowerShell:
 py -m http.server 4173
 ```
 
-No install step or build pipeline is required. Optional browser smoke tests use the independent Python `playwright` package and Chromium (`python tests/browser_smoke.py`). The isolated harness reassembles the exact HTML, CSS and JavaScript source because local file/localhost navigation can be restricted in managed browsers. This is not equivalent to testing a deployed URL.
+```bash
+npm test           # 31 pure Node tests
+npm run check      # checks JavaScript syntax
+python3 tests/browser_smoke.py        # optional Chromium+Playwright checks
+python3 tests/browser_edge_cases.py   # optional negative/adversarial checks
+python3 tests/demo_record.py          # optional 30s live browser recording via ffmpeg
+```
 
-## Current scope
+Python browser tests require `playwright` and an installed Chromium. The test scripts use the system browser at `/usr/bin/chromium`; change that local executable path as appropriate. For this managed testing environment, `file://` and `localhost` browser navigation were blocked, so the harness injects the **same HTML/CSS/JS**, stripping only ES module import/export syntax to assemble the scripts. These tests **are not equivalent to testing a deployed site or a live hosted URL**.
 
-- Four act UI: form → physically animated fracture → verdict → escape.
-- Three source controls are animated to their corresponding in-world puzzle pieces with a tested geometrical flight plan (no synthetic screen change).
-- Reduced-motion users skip the flight and reach the playable puzzle immediately.
-- Responsive full-viewport desktop presentation, visible interaction feedback, reduced-motion support, keyboard and pointer alternatives.
-- Original CSS and SVG visuals; no external artwork or dependencies.
-- Source in `src/`; deterministic state transitions are tested with Node's built-in test runner.
+## User experience
 
-## Competition compliance and Kiro evidence
+- One primary action at a time; the rule explains the next move. Clicking the destination without first selecting the word displays an explicit hint.
+- Mouse dragging and pointer clicks; mobile tap-select/tap-destination; keyboard Enter/Space and Escape to cancel selection.
+- Word movement is validated by a small, deterministic state machine. False or incomplete moves cannot unlock the exit.
+- 32 **decorative** paper fragments and only **one** required word-placement interaction. The fragmentation is spectacle, not a 32-piece hidden-object task.
+- Reduced-motion mode bypasses cinematic flights and preserves the full playable path.
+- Initial input is kept in memory for the current page session only; inserted into UI through `textContent`.
+- No fullscreen takeover, remote requests or external visual assets.
 
-- Public GitHub repo, root `/.kiro` and OSI licence are part of the delivery plan.
-- `/.kiro/specs/experience/` and `/.kiro/steering/` are draft instructions to run inside the user's Kiro environment.
-- **Actual Kiro IDE/CLI execution has not been independently verified yet.** Preparing Kiro files alone must not be presented as evidence that Kiro built or tested this app. The owner must execute and retain authentic Kiro session evidence before submission.
-- The project requires a public working URL, a video of the real application under 3 minutes and submission materials before the deadline. These are pending.
+## Layout and visual structure
 
-## Safety and limitations
+- `src/engine.mjs`: pure, testable state transitions.
+- `src/architecture.mjs`: deterministic positions of 32 in-world panels.
+- `src/metamorphosis.mjs`: 8×4 visual slices of the original DOM document that move to the 32 panel targets.
+- `src/app.js`: pointer, keyboard, feedback, safety and navigation.
+- `src/styles.css`: responsive 2.5D CSS chamber and transformation (no 3D libraries).
+- `tests/`: unit, browser smoke, negative cases, real interaction capture.
+- `.kiro/`: design/acceptance specifications and developer steering **prepared for use with Kiro**.
 
-- The experience deliberately distorts a fictional form. It never changes browser settings, uses fullscreen unexpectedly, or accesses local files.
-- There are no purchases, remote services, or third-party trademarks in the game UI.
-- This is a local prototype. 18 Node unit tests plus an optional Chromium smoke harness cover state, flight geometry, keyboard, reduced-motion and browser layout. These checks do not establish general usability or contest readiness.
+## Validation and known limitations
+
+- Node unit tests: **31/31 pass** in the local run reported in `docs/QA_REPORT_v0.3.md`.
+- Isolated Chromium browser: tested at 1366×768, 1024×768, 390×844 and reduced-motion. Desktop did not scroll; mobile document scrolled 41 pixels vertically. No console page errors observed.
+- Negative cases: wrong drop, empty destination without a selected word, Escape cancellation, HTML-like name, replay, no external requests.
+- The supplied 30s preview was captured from actual browser interactions with the project source, not simulated states or a storyboard. It is not the final Kiroween submission video.
+- **Unverified:** public deployment, external user testing, real Kiro IDE/CLI execution evidence, cross-browser compatibility, final contest submission.
+
+## Kiro evidence requirement
+
+These `.kiro` files are instructions and specifications, **not proof that the game was built with Kiro**. The project owner must execute actual implementation or review tasks in Kiro and preserve authentic session evidence before submission; do not invent Kiro credit usage or agent activity.
 
 ## Licence
 
-MIT. See [`LICENSE`](LICENSE).
+MIT. See [`LICENSE`](LICENSE). Original CSS/SVG and game logic. No third-party runtime dependencies.
