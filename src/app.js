@@ -1,45 +1,49 @@
-import { initialState, submitName, placePiece, openDoor, restart, safeLabel } from './engine.mjs';
+import { initialState, submitName, selectWord, rewriteRule, enterExit, restart, safeLabel } from './engine.mjs';
+import { buildArchitecture } from './architecture.mjs';
 import { animateFormToPuzzle } from './metamorphosis.mjs';
 
-const $ = (selector) => document.querySelector(selector);
-const app = { state: initialState(), pending: false };
-const acts = { form: $('#formAct'), fracture: $('#fractureAct'), verdict: $('#verdictAct'), escaped: $('#escapedAct') };
+const $ = selector => document.querySelector(selector);
+const app = { state: initialState(), pending: false, sequence: 0 };
+const acts = { form: $('#formAct'), fracture: $('#fractureAct'), escaped: $('#escapedAct') };
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pause = (ms) => new Promise(resolve => window.setTimeout(resolve, ms));
+buildArchitecture($('#architecture'));
 
 function render() {
   const { state } = app;
   document.body.dataset.act = state.act;
+  document.body.dataset.rule = state.ruleRewritten ? 'rewritten' : 'locked';
   for (const [id, section] of Object.entries(acts)) section.hidden = state.act !== id;
-  $('#signal').textContent = {
-    form: 'SYSTEM STABLE', fracture: 'REALITY COMPROMISED', verdict: 'VERDICT ISSUED', escaped: 'SYSTEM UNAVAILABLE'
-  }[state.act];
+  $('#signal').textContent = {form:'SYSTEM STABLE', fracture:state.ruleRewritten?'LAW REWRITTEN':'REALITY COMPROMISED', escaped:'SYSTEM UNAVAILABLE'}[state.act];
   $('#statusText').textContent = state.message;
   $('#resetAnytime').hidden = state.act === 'form';
-  $('#identityText').textContent = safeLabel(state.name);
-  $('#verdictName').textContent = safeLabel(state.name);
   $('#escapeName').textContent = safeLabel(state.name);
-  $('#progressNumber').textContent = String(state.collected.length);
-  $('#progressFill').style.width = `${state.collected.length * 100 / 3}%`;
-  for (const button of document.querySelectorAll('[data-piece]')) {
-    const recovered = state.collected.includes(button.dataset.piece);
-    button.disabled = recovered;
-    button.classList.toggle('recovered', recovered);
-    button.setAttribute('aria-pressed', String(recovered));
-  }
-  for (const socket of document.querySelectorAll('[data-socket]')) {
-    socket.classList.toggle('filled', state.collected.includes(socket.dataset.socket));
-  }
-  const words = [
-    'EVIDENCE IS OUTSIDE ITS APPROVED POSITION.',
-    'THE BUREAU ACKNOWLEDGES YOUR EXISTENCE.',
-    'YOUR CONSENT HAS BEEN RETROACTIVELY ACCEPTED.',
-    'YOUR REALITY HAS BEEN REASSEMBLED.'
-  ];
-  $('#worldCaption').textContent = words[state.collected.length];
+  $('#notToken').hidden = state.ruleRewritten;
+  $('#notToken').disabled = state.ruleRewritten;
+  $('#notToken').classList.toggle('selected', state.wordSelected);
+  $('#notToken').setAttribute('aria-pressed', String(state.wordSelected));
+  $('#notSlot').disabled = state.ruleRewritten;
+  $('#notSlot').classList.toggle('ready', state.wordSelected);
+  $('#notSlot').classList.toggle('filled', state.ruleRewritten);
+  $('#slotText').textContent = state.ruleRewritten ? 'NOT' : '_ _ _';
+  $('#notSlot').setAttribute('aria-label', state.ruleRewritten ? 'NOT has been moved into the declaration' : 'Empty space in declaration');
+  $('#enterExit').hidden = !state.ruleRewritten;
+  $('#puzzleHeading').textContent = state.ruleRewritten ? 'You changed the law.' : 'Rewrite the law.';
+  $('#puzzleHint').textContent = state.ruleRewritten ? 'The door obeys. Walk through the exit.' : 'Move the highlighted word into the empty space. The room will obey.';
+  $('#fractureDescription').textContent = state.ruleRewritten ? 'The impossible decision has been undone. Even the walls must comply.' : 'The Bureau has made a decision. Its language is the lock.';
+  $('#puzzleStatus').textContent = state.ruleRewritten ? 'ONE WORD MOVED. BOTH RULES CHANGED.' : 'ONE WORD. TWO RULES. ONE WAY OUT.';
+  $('#worldCaption').textContent = state.ruleRewritten ? 'EXIT AUTHORISED · YOUR DECLARATION IS NOW VOID.' : 'THE DOOR RECOGNISES ONLY WRITTEN LAW.';
+}
+
+function focusAct(selector) {
+  const title = $(selector);
+  title.setAttribute('tabindex','-1');
+  title.focus({preventScroll:true});
 }
 
 $('#applicationForm').addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (app.pending) return;
+  if (app.pending || app.state.act !== 'form') return;
   const next = submitName(app.state, $('#applicantName').value);
   if (next.act === 'form') {
     $('#nameError').textContent = next.message;
@@ -47,93 +51,126 @@ $('#applicationForm').addEventListener('submit', async (event) => {
     return;
   }
   $('#nameError').textContent = '';
+  const seq = ++app.sequence;
   app.pending = true;
   $('#submitApplication').disabled = true;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   try {
-    if (!reduced) {
-      await animateFormToPuzzle({
-        stage: $('#stage'), form: $('#formAct'), fracture: $('#fractureAct'), name: next.name
-      });
-    }
+    if (!reducedMotion()) await animateFormToPuzzle({stage:$('#stage'),form:$('#formAct'),fracture:$('#fractureAct'),architecture:$('#architecture'),name:next.name});
   } catch (error) {
-    // Animation errors cannot block access to the actual puzzle.
-    console.warn('Transition unavailable; opening puzzle without animation.', error);
+    console.warn('Cinematic transition unavailable. Entering the puzzle directly.', error);
+    $('#fractureAct').inert = false;
+    $('#fractureAct').removeAttribute('aria-hidden');
+    $('#stage').classList.remove('transmuting','reveal-void');
   } finally {
-    app.state = next;
-    app.pending = false;
-    $('#submitApplication').disabled = false;
-    render();
-    $('#fractureTitle').setAttribute('tabindex', '-1');
-    $('#fractureTitle').focus({ preventScroll: true });
-  }
-});
-
-function recover(id) {
-  if (app.state.act !== 'fracture' || app.pending) return;
-  const next = placePiece(app.state, id);
-  if (next === app.state) return;
-  const element = document.querySelector(`[data-piece="${id}"]`);
-  if (element) { element.style.transform = ''; element.classList.add('just-recovered'); }
-  app.state = next;
-  render();
-  if (next.act === 'verdict') {
-    $('#verdictTitle').setAttribute('tabindex','-1');
-    $('#verdictTitle').focus({preventScroll:true});
-  }
-}
-
-for (const button of document.querySelectorAll('[data-piece]')) {
-  // Pointer movement is optional; click, keyboard, and touch activation work independently.
-  let point = null;
-  button.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 || button.disabled) return;
-    point = { startX:e.clientX, startY:e.clientY, originalX:e.clientX, originalY:e.clientY, moved:false, id:e.pointerId };
-    button.setPointerCapture?.(e.pointerId);
-  });
-  button.addEventListener('pointermove', (e) => {
-    if (!point || point.id !== e.pointerId || button.disabled) return;
-    const dx = e.clientX - point.startX, dy = e.clientY - point.startY;
-    if (Math.hypot(dx,dy) > 8) point.moved = true;
-    if (point.moved) button.style.transform = `translate(${dx}px,${dy}px) rotate(0deg) scale(1.04)`;
-  });
-  button.addEventListener('pointerup', (e) => {
-    if (!point || point.id !== e.pointerId) return;
-    const moved=point.moved;
-    button.style.transform='';
-    point=null;
-    if (moved) {
-      const socket=document.querySelector(`[data-socket="${button.dataset.piece}"]`);
-      const r=socket?.getBoundingClientRect();
-      const inside=r && e.clientX>=r.left-30 && e.clientX<=r.right+30 && e.clientY>=r.top-30 && e.clientY<=r.bottom+30;
-      if (inside) recover(button.dataset.piece);
-      else {
-        $('#worldCaption').textContent = 'THAT FRAGMENT BELONGS IN ITS MATCHING OUTLINE. OR TAP TO PLACE.';
-      }
-      button.dataset.preventClick='true';
-      window.setTimeout(() => { delete button.dataset.preventClick; }, 0);
+    if (seq === app.sequence) {
+      app.state = next;
+      app.pending = false;
+      $('#submitApplication').disabled = false;
+      render();
+      focusAct('#fractureTitle');
     }
-  });
-  button.addEventListener('pointercancel', () => { point=null; button.style.transform=''; });
-  button.addEventListener('click', () => {
-    if (button.dataset.preventClick === 'true') { delete button.dataset.preventClick; return; }
-    recover(button.dataset.piece);
-  });
+  }
+});
+
+function chooseWord() {
+  if (app.pending || app.state.act !== 'fracture' || app.state.ruleRewritten) return;
+  app.state = selectWord(app.state);
+  render();
+  if (app.state.wordSelected) $('#notSlot').classList.add('attention');
+  else $('#notSlot').classList.remove('attention');
 }
 
-$('#openDoorButton').addEventListener('click', () => {
-  app.state = openDoor(app.state);
+async function commitRule(method) {
+  if (app.pending) return;
+  const next = rewriteRule(app.state, method);
+  if (next === app.state) {
+    if (!app.state.ruleRewritten) {
+      $('#worldCaption').textContent = 'FIRST SELECT THE HIGHLIGHTED WORD: NOT.';
+      $('#notToken').focus({preventScroll:true});
+    }
+    return;
+  }
+  app.state = next;
+  $('#notSlot').classList.remove('attention');
   render();
-  $('#escapedTitle').setAttribute('tabindex','-1');
-  $('#escapedTitle').focus({preventScroll:true});
-});
-function resetAll() {
-  app.state=restart(); app.pending=false;
-  $('#fractureAct').classList.remove('entered-from-form');
-  $('#applicantName').value=''; $('#nameError').textContent='';
-  for (const button of document.querySelectorAll('[data-piece]')) { button.classList.remove('just-recovered'); button.style.transform=''; delete button.dataset.preventClick; }
-  render(); $('#applicantName').focus({preventScroll:true});
+  if (!reducedMotion()) await pause(1120);
+  if (app.state.ruleRewritten && app.state.act === 'fracture') $('#enterExit').focus({preventScroll:true});
 }
-$('#restartButton').addEventListener('click', resetAll);
-$('#resetAnytime').addEventListener('click', resetAll);
+
+const token = $('#notToken');
+const slot = $('#notSlot');
+let drag = null;
+token.addEventListener('pointerdown', event => {
+  if (event.button !== 0 || token.disabled || app.pending) return;
+  drag = {id:event.pointerId,x:event.clientX,y:event.clientY,moved:false};
+  token.setPointerCapture?.(event.pointerId);
+});
+token.addEventListener('pointermove', event => {
+  if (!drag || drag.id !== event.pointerId) return;
+  const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+  if (Math.hypot(dx,dy)>9) drag.moved=true;
+  if (drag.moved) {
+    token.classList.add('dragging');
+    token.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.max(-8,Math.min(8,dx*.02))}deg)`;
+    const r=slot.getBoundingClientRect();
+    slot.classList.toggle('hover-drop',event.clientX>=r.left-24 && event.clientX<=r.right+24 && event.clientY>=r.top-24 && event.clientY<=r.bottom+24);
+  }
+});
+token.addEventListener('pointerup', event => {
+  if (!drag || drag.id !== event.pointerId) return;
+  const moved=drag.moved;
+  drag=null;
+  token.classList.remove('dragging');
+  token.style.transform='';
+  slot.classList.remove('hover-drop');
+  if (!moved) return;
+  const r=slot.getBoundingClientRect();
+  const inside=event.clientX>=r.left-24 && event.clientX<=r.right+24 && event.clientY>=r.top-24 && event.clientY<=r.bottom+24;
+  token.dataset.suppressClick='true';
+  window.setTimeout(()=>delete token.dataset.suppressClick,0);
+  if (inside) void commitRule('drag');
+  else $('#worldCaption').textContent='MOVE THE WORD INTO THE HIGHLIGHTED EMPTY SPACE.';
+});
+token.addEventListener('pointercancel',()=>{drag=null;token.style.transform='';token.classList.remove('dragging');slot.classList.remove('hover-drop');});
+token.addEventListener('click',()=>{
+  if (token.dataset.suppressClick==='true'){delete token.dataset.suppressClick;return;}
+  chooseWord();
+});
+slot.addEventListener('click',()=>void commitRule('select'));
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape' && app.state.act==='fracture' && app.state.wordSelected){
+    event.preventDefault();chooseWord();token.focus({preventScroll:true});
+  }
+});
+
+$('#enterExit').addEventListener('click', async () => {
+  if(app.pending || !app.state.ruleRewritten || app.state.act!=='fracture')return;
+  const next=enterExit(app.state);
+  const seq=++app.sequence;
+  app.pending=true;
+  document.body.classList.add('crossing-portal');
+  if (!reducedMotion()) await pause(850);
+  if (seq!==app.sequence) return;
+  app.state=next;
+  app.pending=false;
+  document.body.classList.remove('crossing-portal');
+  render();focusAct('#escapedTitle');
+});
+
+function resetAll(){
+  ++app.sequence;
+  app.state=restart();app.pending=false;
+  $('#fractureAct').inert=false;
+  $('#fractureAct').removeAttribute('aria-hidden');
+  $('#fractureAct').classList.remove('entered-from-form');
+  $('#stage').classList.remove('transmuting','reveal-void');
+  document.body.classList.remove('crossing-portal');
+  $('#applicantName').value='';
+  $('#nameError').textContent='';
+  $('#submitApplication').disabled=false;
+  $('#notSlot').classList.remove('attention','hover-drop');
+  render();$('#applicantName').focus({preventScroll:true});
+}
+$('#restartButton').addEventListener('click',resetAll);
+$('#resetAnytime').addEventListener('click',resetAll);
 render();
