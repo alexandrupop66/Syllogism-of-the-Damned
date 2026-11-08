@@ -36,3 +36,148 @@ body[data-act="fracture"] .chrome-led{background:var(--red);box-shadow:0 0 12px 
 .stage.rupture .act-form{animation:fractureOut .4s cubic-bezier(.6,0,.8,.4) both;transform-origin:center 20%;pointer-events:none}
 @media (max-height:820px) and (min-width:861px){.paper-head{height:61px}.paper-inner{height:calc(100% - 121px)}.paper-left{padding-top:18px}.paper-left h1{font-size:clamp(42px,4.8vw,67px);margin:14px 0 11px}.paper-intro{font-size:14px;line-height:1.43;margin-bottom:14px}.form-footnote{margin-top:9px}}
 @media (prefers-reduced-motion:reduce){.stage.rupture .act-form{animation:none!important}}
+
+/* v0.3 / THE IMPOSSIBLE RULE: a readable puzzle inside a paper-built impossible chamber. */
+:root { --gild:#d7bca7;--pale:#e9ded3;--mint:#d7f2c4; }
+body[data-act="fracture"] .stage { perspective:1350px; }
+.act-fracture { isolation:isolate; background:radial-gradient(ellipse 70% 80% at 72% 48%,#281e2b 0%,#171319 57%,#100f17 100%);border-color:#78535d; }
+.fracture-layout { grid-template-columns:minmax(300px,35%) minmax(0,65%); }
+.fracture-copy { padding:clamp(33px,4.3vw,66px) 15px 32px clamp(35px,4.1vw,68px); }
+.fracture-copy h2 { font-size:clamp(40px,4.55vw,70px); margin:clamp(30px,4.5vw,57px) 0 17px; }
+.fracture-copy>p { color:#b7aab0;line-height:1.7;max-width:310px; }
+.instructions { margin-top:12px;max-width:300px;gap:12px;border-color:#df6d70; }
+.instructions strong { font-size:clamp(18px,1.8vw,24px); }
+.instructions span:last-child {color:#c7b8bf;font-size:clamp(13px,1vw,15px);line-height:1.6;}
+.puzzle-indicator { margin-top:auto;display:flex;align-items:center;gap:12px;max-width:300px;padding-top:16px;color:#bfaeaf;font:700 10px var(--mono);letter-spacing:.08em;line-height:1.6; }
+.puzzle-indicator-line {display:block;flex:0 0 19px;height:2px;background:#e68981;box-shadow:0 0 18px #f18a80a5;}
+.fracture-world {position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse 60% 50% at 50% 42%,#58444d38,transparent 75%);}
+.chamber {position:absolute;inset:0;z-index:0;overflow:hidden;perspective:730px;transition:filter 1s ease,transform 1.2s cubic-bezier(.12,.8,.15,1);}
+.chamber-aura {position:absolute;inset:-25%;background:radial-gradient(circle at 52% 45%,#d46f6566 0%,#8d344440 16%,#2b1a2860 40%,transparent 59%);opacity:.37;transition:opacity 1s,transform 1.2s;}
+.chamber-back {position:absolute;left:24%;right:24%;top:6%;bottom:5%;background:linear-gradient(100deg,#1e131b,#4a2a34 50%,#26171f);clip-path:polygon(10% 9%,90% 9%,93% 92%,7% 92%);box-shadow:inset 0 0 50px #0009;}
+.chamber-ceiling {position:absolute;inset:0 0 55%;background:linear-gradient(180deg,#3b2a36 0%,#261923bb 65%,#9e706246 100%);clip-path:polygon(0 0,100% 0,79% 76%,21% 76%);transition:transform 1.2s ease,opacity 1s;opacity:.85;}
+.chamber-floor {position:absolute;inset:55% 0 0;background:repeating-linear-gradient(90deg,#dba39d16 0,#dba39d16 1px,transparent 1px,transparent 11%),linear-gradient(0deg,#251720d9,#7c555c3b);clip-path:polygon(22% 0,78% 0,100% 100%,0 100%);transform:perspective(430px) rotateX(22deg);transform-origin:bottom;transition:transform 1.2s ease;}
+.chamber-wall {position:absolute;top:0;height:100%;width:40%;background:repeating-linear-gradient(0deg,#ffe1c109 0,#ffe1c109 2px,transparent 2px,transparent 53px),linear-gradient(90deg,#271d25,#62454c 75%,#3d2832);border:1px solid #c5918236;transition:transform 1.2s cubic-bezier(.15,.85,.15,1.1),filter 1s ease;}
+.chamber-wall:before {content:"";position:absolute;inset:4% 7%;border:1px double #b9a09b24;}
+.chamber-wall span {position:absolute;top:19%;font:700 11px/2 var(--mono);letter-spacing:.22em;color:#e6d2c245;text-align:center;}
+.chamber-wall-left {left:-10%;clip-path:polygon(0 0,100% 19%,86% 85%,0 100%);transform:perspective(500px) rotateY(19deg) translateX(-5%);}
+.chamber-wall-left span {right:15%;}
+.chamber-wall-right {right:-10%;clip-path:polygon(0 19%,100% 0,100% 100%,14% 85%);transform:perspective(500px) rotateY(-19deg) translateX(5%);}
+.chamber-wall-right span {left:15%;}
+.chamber-glyph {position:absolute;left:50%;top:20%;transform:translateX(-50%);font-size:120px;line-height:1;color:#e5b6a612;filter:blur(2px);transition:transform 1.4s ease,opacity .6s;}
+.architecture {position:absolute;inset:0;z-index:1;pointer-events:none;}
+.architecture-shard {position:absolute;left:var(--x);top:var(--y);width:8%;height:3%;transform:rotate(var(--angle));border:1px solid #dfac9755;box-shadow:0 1px 14px #efaaa31a;background:repeating-linear-gradient(90deg,#dcc0ab18 0 1px,transparent 1px 12px),linear-gradient(100deg,#c3a89a55,#9c6f6f27);opacity:.66;transition:transform 1.1s ease,opacity 1s ease,filter 1s;}
+.architecture-shard--1,.architecture-shard--2 {width:5%;height:5%;background:linear-gradient(145deg,#bea7a24f,#b17b7740);}
+.architecture-shard--3 {width:7%;height:4%;opacity:.35;}
+.room-portal {position:absolute;z-index:2;left:50%;top:24%;width:27%;height:59%;transform:translateX(-50%);transition:transform 1.2s cubic-bezier(.15,.84,.2,1),filter 1.2s;}
+.portal-frame {position:absolute;inset:0 7% 0;border:5px double #9d817b99;border-bottom:0;background:linear-gradient(90deg,#0d0b11 0%,#171019 48%,#0c0c12 100%);box-shadow:inset 0 0 40px #040207,0 0 29px #150c0d,0 0 0 12px #b5a19718;display:grid;place-items:center;overflow:hidden;transition:border-color .8s,box-shadow .8s,transform 1s;}
+.portal-frame:before {content:"";position:absolute;inset:8%;border:1px solid #be93835e;}
+.portal-frame span {font:700 11px var(--mono);color:#d5b7ae66;letter-spacing:.3em;position:relative;z-index:2;transition:color .7s,transform .7s;}
+.portal-light {position:absolute;inset:0;background:radial-gradient(ellipse 60% 65% at 50% 63%,#fdf5d8 0%,#c9ecbf 25%,#87c68f 51%,#356348 78%,#132f2b 100%);opacity:0;transform:scale(.4);filter:blur(20px);transition:opacity 1s,transform 1.3s,filter 1s;}
+.portal-sigil {position:absolute;z-index:5;left:50%;top:-18px;transform:translateX(-50%);color:#f8bcadad;font-size:40px;filter:drop-shadow(0 0 11px #e8a4a44f);}
+.portal-action {position:absolute;z-index:8;bottom:8%;left:50%;transform:translateX(-50%);min-width:max-content;border:1px solid #e8f3de;color:#0d2317;background:#dff7d1;box-shadow:0 0 26px #a4eb9288,0 0 70px #69c58c55;padding:13px 18px;display:flex;align-items:center;gap:16px;font:700 11px var(--mono);letter-spacing:.1em;animation:doorPrompt 900ms .8s both;}
+.portal-action:hover {background:#fffdeb;transform:translateX(-50%) translateY(-2px);}
+.portal-action span {font-size:21px;}
+@keyframes doorPrompt {from {opacity:0;translate:0 18px}to {opacity:1;translate:0 0}}
+.law-board {position:absolute;z-index:5;left:10%;right:10%;top:15%;bottom:11%;padding:18px 22px 14px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid #d8aca27c;background:linear-gradient(147deg,#211a26eb,#37222aee 52%,#231820ec);box-shadow:0 2px 0 #171117,0 28px 75px #08060ac7,inset 0 0 0 1px #f5dfd014;backdrop-filter:blur(5px);transition:transform 1.05s cubic-bezier(.16,.89,.26,1),opacity .85s,border-color .6s,box-shadow 1s;}
+.law-board:before,.law-board:after {content:"";position:absolute;width:23px;height:23px;border:1px solid #e2c6b17b;pointer-events:none;}
+.law-board:before {left:-6px;top:-6px;border-right:0;border-bottom:0;}
+.law-board:after {right:-6px;bottom:-6px;border-left:0;border-top:0;}
+.law-topline,.law-board-bottom {font:700 9px/1.4 var(--mono);letter-spacing:.15em;color:#b8a5a7;}
+.law-topline {display:flex;justify-content:space-between;gap:10px;padding-bottom:11px;border-bottom:1px solid #c99e9361;}
+.law-board-bottom {border-top:1px solid #c99e9361;padding-top:10px;min-height:25px;color:#d4b2a6;}
+.law-rule {padding:clamp(12px,2vw,24px) 15px;display:flex;flex-direction:column;gap:10px;border:1px solid #bb939038;background:#0e0c1187;box-shadow:inset 0 0 34px #0d08152b;transition:background .7s,border-color .7s,transform 1s,opacity .5s;}
+.law-rule-primary {border-left:3px solid #ef9387;}
+.law-rule-secondary {border-left:3px solid #b79b95;}
+.law-label {font:700 9px var(--mono);letter-spacing:.19em;color:#bba8ab;}
+.law-rule p {margin:0;font:800 clamp(19px,2.25vw,31px)/1.48 var(--display);letter-spacing:-.035em;color:#f6eee7;}
+.word-token {display:inline-flex;align-items:center;justify-content:center;background:#e96c67;color:#21151a;border:2px solid #ffe7d7;box-shadow:0 0 0 5px #ed686724,0 0 25px #ec696d80;padding:0 10px;border-radius:3px;line-height:1.3;font:800 inherit;letter-spacing:.01em;cursor:grab;touch-action:none;user-select:none;position:relative;z-index:9;transition:box-shadow .2s,background .2s;}
+.word-token:hover,.word-token:focus-visible,.word-token.selected {background:#ffe1b7;box-shadow:0 0 0 6px #ffe8a93b,0 0 34px #ffe0a9b6;}
+.word-token.selected:after {content:"SELECTED";position:absolute;top:-21px;left:50%;transform:translateX(-50%);font:700 9px var(--mono);letter-spacing:.1em;color:#ffddb9;white-space:nowrap;}
+.word-token.dragging {transition:none;cursor:grabbing;z-index:99;}
+.word-slot {display:inline-flex;min-width:96px;min-height:46px;align-items:center;justify-content:center;border:2px dashed #e7bbafaa;background:#f3d7c511;color:#f8dccc;padding:0 10px;vertical-align:middle;line-height:1.3;font:800 inherit;letter-spacing:.07em;transition:background .2s,box-shadow .2s,border-color .2s;}
+.word-slot:hover,.word-slot.ready,.word-slot.hover-drop,.word-slot.attention {border-color:#ffe4bd;background:#e4d8b326;box-shadow:0 0 0 5px #ffdec11c,0 0 30px #e9ad8e71;}
+.word-slot.filled {background:#c4e7b92b;border:2px solid #c3e7b7;color:#e4f5df;}
+.word-slot:disabled {opacity:1;cursor:default;}
+/* Rewriting one word physically reconfigures the room. */
+body[data-rule="rewritten"] .law-board {transform:translateY(-47%) scale(.79);opacity:.38;box-shadow:0 32px 80px #000b;pointer-events:none;}
+body[data-rule="rewritten"] .law-rule-primary {border-left-color:#bde4b1;background:#20322487;}
+body[data-rule="rewritten"] .law-rule-secondary {border-left-color:#c4e1bb;background:#20322487;}
+body[data-rule="rewritten"] .chamber-wall-left {transform:perspective(500px) rotateY(42deg) translateX(-38%);filter:brightness(1.8);}
+body[data-rule="rewritten"] .chamber-wall-right {transform:perspective(500px) rotateY(-42deg) translateX(38%);filter:brightness(1.8);}
+body[data-rule="rewritten"] .chamber-ceiling {transform:translateY(-29%) scaleX(1.3);opacity:.4;}
+body[data-rule="rewritten"] .chamber-floor {transform:perspective(500px) rotateX(33deg) scale(1.24);}
+body[data-rule="rewritten"] .chamber-aura {opacity:1;transform:scale(1.45);}
+body[data-rule="rewritten"] .chamber-glyph {transform:translateX(-50%) scale(1.9) rotate(37deg);opacity:0;}
+body[data-rule="rewritten"] .room-portal {transform:translateX(-50%) scale(1.55) translateY(3%);filter:drop-shadow(0 0 29px #b1e3ac61);}
+body[data-rule="rewritten"] .portal-frame {border-color:#d2ecc1;box-shadow:0 0 120px #a8f4a95f,inset 0 0 30px #f0ffd999,0 0 0 12px #dfffd229;}
+body[data-rule="rewritten"] .portal-light {opacity:.98;transform:scale(1.4);filter:blur(0);}
+body[data-rule="rewritten"] .portal-frame span {color:#163020;transform:translateY(-50px);}
+body[data-rule="rewritten"] .architecture-shard {transform:translateX(calc((var(--i) - 15) * 1px)) rotate(calc(var(--angle) * 2)) scale(1.4);opacity:.24;}
+body[data-rule="rewritten"] .instructions {border-color:#c6e6b9;}
+body[data-rule="rewritten"] .puzzle-indicator-line {background:#c6e6b9;box-shadow:0 0 20px #c6e6b9;}
+body.crossing-portal .room-portal {transform:translateX(-50%) scale(6);filter:brightness(2.5) blur(5px);}
+body.crossing-portal .law-board,body.crossing-portal .fracture-copy {opacity:0;transition:opacity .35s;}
+/* Actual document cells, 8 columns x 4 rows, travel into the room's paper architecture. */
+.metamorph-layer-v3 {z-index:13;}
+.paper-shard-flight {position:fixed;overflow:hidden;will-change:transform,opacity;border:1px solid #e0b8a755;box-shadow:0 3px 22px #d39a8b24;transform-origin:center;contain:layout paint;}
+.paper-shard-flight .paper-copy {min-width:0;max-width:none;max-height:none;pointer-events:none;box-shadow:none;}
+.paper-shard-flight .paper-copy * {pointer-events:none!important;}
+.stage.transmuting .act-form {animation:documentUnmakes 1170ms cubic-bezier(.64,0,.5,1) both;}
+.stage.transmuting #fractureAct {z-index:1;}
+.stage.transmuting.reveal-void #fractureAct {transition:opacity 1300ms ease-out 70ms;}
+.stage.transmuting #fractureAct .law-board {opacity:0;transform:translateY(34px) scale(.9);}
+.act-fracture.entered-from-form .law-board {animation:lawArrives 700ms ease-out both;}
+@keyframes lawArrives {from {opacity:0;transform:translateY(26px) scale(.96)}to {opacity:1;transform:none}}
+@media (min-width:861px) and (max-height:820px) {
+ .fracture-copy {padding-top:32px;padding-bottom:26px;}
+ .fracture-copy h2 {font-size:clamp(40px,4.4vw,62px);margin:27px 0 12px;}
+ .fracture-copy>p {font-size:14px;line-height:1.6;margin-bottom:9px;}
+ .instructions {margin-top:12px;gap:9px;}
+ .law-board {top:14%;bottom:9%;padding:13px 20px 11px;}
+ .law-rule {padding:13px 14px;gap:5px;}
+ .law-rule p {font-size:clamp(19px,2vw,27px);line-height:1.42;}
+ .word-slot {min-height:40px;}
+ .law-topline,.law-board-bottom {font-size:8px;}
+}
+@media (max-width:860px) {
+ .act-fracture {min-height:760px;}
+ .fracture-layout {display:block;}
+ .fracture-copy {padding:27px 25px 0;min-height:265px;}
+ .fracture-copy h2 {font-size:46px;margin:17px 0 10px;}
+ .fracture-copy>p {font-size:13px;line-height:1.5;margin-bottom:10px;max-width:none;}
+ .instructions {padding:2px 0 2px 12px;max-width:none;gap:5px;margin-top:3px;}
+ .instructions strong {font-size:17px;}
+ .instructions span:last-child {font-size:13px;line-height:1.4;}
+ .puzzle-indicator {margin-top:9px;font-size:9px;}
+ .fracture-world {height:500px;overflow:hidden;}
+ .law-board {left:8%;right:8%;top:9%;bottom:9%;padding:16px;}
+ .law-rule {padding:17px 12px;}
+ .law-rule p {font-size:clamp(22px,5.1vw,30px);}
+ .room-portal {width:25%;height:54%;}
+}
+@media (max-width:480px) {
+ .act-fracture {min-height:750px;}
+ .fracture-copy {padding:21px 18px 0;min-height:259px;}
+ .fracture-copy h2 {font-size:40px;margin:13px 0 8px;}
+ .fracture-copy>p {margin-bottom:8px;font-size:12px;}
+ .instructions strong {font-size:16px;}
+ .instructions span:last-child {font-size:12px;}
+ .fracture-world {height:480px;}
+ .law-board {left:5%;right:5%;top:9%;bottom:9%;padding:13px 13px 10px;}
+ .law-rule {padding:13px 10px;gap:9px;}
+ .law-rule p {font-size:22px;}
+ .law-topline,.law-board-bottom {font-size:8px;letter-spacing:.05em;}
+ .word-token {padding:0 7px;}
+ .word-slot {min-width:72px;min-height:40px;padding:0 5px;}
+ .portal-action {font-size:9px;padding:10px 12px;}
+}
+@media (prefers-reduced-motion:reduce) {
+ .chamber *, .law-board, .portal-action {transition-duration:.001ms!important;animation-duration:.001ms!important;}
+}
+
+/* v0.3 finishing: the proof remains briefly visible, then gives the doorway the stage. */
+.word-token,.word-slot {font-family:var(--display);font-weight:800;font-size:inherit;line-height:1.32;}
+.portal-granted {position:absolute;bottom:23%;left:50%;transform:translateX(-50%);font:800 11px/1.5 var(--mono);letter-spacing:.19em;color:#0d331d;text-align:center;width:170px;opacity:0;transition:opacity .8s .75s;}
+body[data-rule="rewritten"] .portal-granted {opacity:1;}
+body[data-rule="rewritten"] .law-board {transform:translateY(-8%) scale(.89);opacity:0;transition:transform .9s .45s,opacity .75s .5s;}
+body[data-rule="rewritten"] .act-fracture.entered-from-form .law-board {animation:none;}
