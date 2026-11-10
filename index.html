@@ -1,101 +1,83 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#101015" />
-  <meta name="description" content="Syllogism of the Damned: an impossible bureaucratic nightmare. Your application is not what it seems." />
-  <title>Syllogism of the Damned | Bureau of Impossible Affairs</title>
-  <link rel="stylesheet" href="src/styles.css" />
-  <script type="module" src="src/app.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#16120f">
+  <meta name="description" content="The Bureau acts only on what it can prove. Rewrite its premises, watch its deductions, and escape its judgement.">
+  <title>Syllogism of the Damned · The Bureau's Logic</title>
+  <link rel="stylesheet" href="src/bureau.css">
+  <script type="module" src="src/bureau-app.js"></script>
 </head>
-<body data-act="form">
-  <div class="ambient" aria-hidden="true"></div>
-  <header class="chrome-bar">
-    <a class="wordmark" href="./" aria-label="Syllogism of the Damned, start page"><span class="crest-mini">✳</span><span>SYLLOGISM<span class="wordmark-light"> / OF THE DAMNED</span></span></a>
-    <div class="chrome-right"><span class="chrome-led"></span><span class="chrome-signal" id="signal">SYSTEM STABLE</span><span class="chrome-separator">/</span><span class="version">CASE NO. 001</span></div>
-  </header>
+<body data-outcome="DETAINED" data-puzzle="1" data-solved="false">
+  <div class="ambient-grain" aria-hidden="true"></div>
+  <main class="scene" id="scene">
+    <header class="masthead">
+      <div class="crest" aria-hidden="true"><span>▤</span></div>
+      <div class="masthead-copy"><p class="eyebrow">THE BUREAU OF IMPOSSIBLE AFFAIRS · FILE P-4173-A</p><h1>Syllogism <em>of the Damned</em></h1><p class="motto">THE BUREAU ACTS ONLY ON WHAT IT CAN PROVE.</p></div>
+      <div class="case-switch" aria-label="Case progress"><span id="caseIndex">CASE 01 / 02</span><span class="case-dots" aria-hidden="true"><i class="active"></i><i id="caseDot2"></i></span></div>
+    </header>
 
-  <main class="stage" id="stage">
-    <section class="act act-form" id="formAct" aria-labelledby="formTitle">
-      <div class="paper-edge paper-edge-top" aria-hidden="true"></div>
-      <div class="paper-head"><span>THE CENTRAL REGISTRY</span><span>FORM 0–∞ / REV. 13</span></div>
-      <div class="paper-inner">
-        <div class="paper-left">
-          <div class="chapter-label"><span class="bar"></span> OFFICIAL DOCUMENT · CLASSIFIED AS ORDINARY</div>
-          <h1 id="formTitle">An application<br />to <em>exist.</em></h1>
-          <p class="paper-intro">Every person must be registered.<br />Every registration must be approved.<br />Every approval must make sense.</p>
-          <form id="applicationForm" novalidate>
-            <label for="applicantName">01 &nbsp; YOUR LEGAL NAME <span class="asterisk">*</span></label>
-            <div class="input-wrap"><input type="text" id="applicantName" name="name" autocomplete="off" maxlength="32" placeholder="Enter your name" required aria-describedby="nameError"/><span class="input-glyph" aria-hidden="true">↗</span></div>
-            <p id="nameError" class="validation" role="alert" aria-live="polite"></p>
-            <button type="submit" class="primary-button" id="submitApplication"><span>SUBMIT APPLICATION</span><span class="btn-arrow">↗</span></button>
-          </form>
-          <p class="form-footnote"><span aria-hidden="true">✳</span> I DO ACCEPT THE TERMS. COMPLIANCE IS ASSUMED.</p>
+    <section class="workspace" aria-label="Case investigation">
+      <article class="paper record" aria-labelledby="recordHeading">
+        <div class="paper-hardware" aria-hidden="true">● <span>●</span></div>
+        <header class="paper-heading"><h2 id="recordHeading">PERSON RECORD</h2><span>FILE NO. P-4173-A</span></header>
+        <div class="record-profile">
+          <div class="portrait" role="img" aria-label="Silhouette of Avery, the fictional case subject"><div class="portrait-head"></div><div class="portrait-shoulders"></div></div>
+          <dl><dt>NAME</dt><dd>AVERY</dd><dt>STATUS</dt><dd>ACTIVE</dd><dt id="recordTypeLabel">CLASS</dt><dd id="recordType">APPLICANT</dd></dl>
         </div>
-        <div class="paper-right" aria-hidden="true">
-          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-          <div class="eye-mark"><svg viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 70C56 13 144 13 191 70C144 127 56 127 9 70Z" stroke="currentColor" stroke-width="1.8"/><circle cx="100" cy="70" r="38" stroke="currentColor" stroke-width="1.4"/><circle cx="100" cy="70" r="16" fill="currentColor"/><path d="M100 1V29M100 111V139M1 70H29M171 70H199" stroke="currentColor" stroke-width="1.4"/><path d="M50 19L62 35M138 105L150 121M150 19L138 35M62 105L50 121" stroke="currentColor" stroke-width="1.2"/></svg></div>
-          <div class="stamp"><span>STATUS</span><strong>PENDING</strong><small>PRIOR TO EXISTENCE</small></div>
+        <div class="declarations" id="declarations">
+          <p>CASE SUBJECT</p>
+          <div class="declaration">AVERY IS CLASSED <strong>APPLICANT</strong>.</div>
         </div>
+        <div class="record-bottom"><span class="stamp">SUBJECT<br>AVERY</span><span class="round-seal">BUREAU<br><b>▤</b><br>REGISTRY</span></div>
+        <p class="record-note">All declarations in this record are presumed true.</p>
+      </article>
+
+      <article class="paper rules" aria-labelledby="rulesHeading">
+        <header class="paper-heading"><h2 id="rulesHeading">CLASSIFICATION RULES</h2><span id="rulesRef">FORM L-12</span></header>
+        <div id="ruleRows" class="rule-rows" aria-label="Swappable rules"></div>
+        <div class="standing-order" id="standingOrder"><span class="standing-id" id="standingId">SR</span><p id="standingText">EVERY PERSON CLASSED ESCORTED IS CLASSED AUTHORISED.</p></div>
+        <div class="rules-bottom"><span id="ruleNote">STAFF LIMITATION: R1 MAY NOT TARGET CLERK.</span><span class="paper-seal-small">◈ VERIFIED IF PROVEN</span></div>
+      </article>
+
+      <aside class="door-room" aria-labelledby="doorHeading">
+        <div class="room-ceiling" aria-hidden="true"></div>
+        <div class="door-frame">
+          <div class="door-halo" aria-hidden="true"></div>
+          <div class="door" id="door">
+            <div class="door-emblem" aria-hidden="true">▤</div>
+            <div class="door-inner-border" aria-hidden="true"></div>
+            <span class="door-file" id="doorHeading">CASE P-4173-A</span>
+            <button type="button" class="submit-case" id="submitCase"><span id="submitLabel">SUBMIT</span><small id="submitSmall">FOR REVIEW</small></button>
+            <div class="door-result" id="doorResult">REFUSED</div>
+            <div class="door-padlock" aria-hidden="true">♙</div>
+          </div>
+        </div>
+        <div class="door-hardware" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="door-caption" id="doorCaption">THE DOOR OBEYS THE LEDGER, NOT YOU.</p>
+      </aside>
+    </section>
+
+    <section class="desk" aria-labelledby="ledgerHeading">
+      <div class="desk-tray" aria-label="Unassigned classification word">
+        <div class="tray-head"><span>IN-TRAY</span><small>EXCHANGE WITH A RULE</small></div>
+        <div id="traySlot" class="tray-slot"></div>
+        <p>Choose any two stamps to swap.</p>
       </div>
-      <div class="paper-bottom"><span>DEPARTMENT OF IMPOSSIBLE AFFAIRS</span><span>YOUR COMPLIANCE IS APPRECIATED.</span></div>
-    </section>
-
-    <section class="act act-fracture" id="fractureAct" hidden aria-labelledby="fractureTitle">
-      <div class="fracture-grain" aria-hidden="true"></div>
-      <div class="fracture-layout">
-        <div class="fracture-copy">
-          <div class="kicker kicker-alert"><span class="alert-dot"></span> ERROR 000: REALITY NOT FOUND</div>
-          <h2 id="fractureTitle">Your form<br />has <em>escaped.</em></h2>
-          <p id="fractureDescription">The Bureau has made a decision.<br />Its language is the lock.</p>
-          <div class="instructions" id="puzzleInstructions">
-            <span class="instructions-index">CASE 001 / THE IMPOSSIBLE RULE</span>
-            <strong id="puzzleHeading">Rewrite the law.</strong>
-            <span id="puzzleHint">Move the highlighted word into the empty space. The room will obey.</span>
-          </div>
-          <div class="puzzle-indicator" aria-live="polite" aria-atomic="true">
-            <span class="puzzle-indicator-line"></span>
-            <span id="puzzleStatus">ONE WORD. TWO RULES. ONE WAY OUT.</span>
-          </div>
+      <article class="ledger paper" aria-live="polite" aria-atomic="true">
+        <header class="ledger-heading"><h2 id="ledgerHeading">DEDUCTION LEDGER <small>CASE: AVERY</small></h2><span id="ledgerTrace">TRACE NO. T-001</span></header>
+        <div class="ledger-content">
+          <div class="ledger-steps" id="ledgerSteps"></div>
+          <div class="ledger-verdict"><span class="verdict-label">CURRENT FINDING</span><strong id="ledgerVerdict">AVERY IS DETAINED.</strong><p id="ledgerExplanation">The rule establishes detention.</p></div>
         </div>
-        <div class="fracture-world" id="fractureWorld">
-          <div class="chamber" id="chamber" aria-label="The impossible chamber">
-            <div class="chamber-aura" aria-hidden="true"></div>
-            <div class="chamber-back" aria-hidden="true"></div>
-            <div class="chamber-ceiling" aria-hidden="true"></div>
-            <div class="chamber-floor" aria-hidden="true"></div>
-            <div class="chamber-wall chamber-wall-left" aria-hidden="true"><span>FORM<br/>0—∞</span></div>
-            <div class="chamber-wall chamber-wall-right" aria-hidden="true"><span>THE<br/>REGISTRY</span></div>
-            <div class="chamber-glyph" aria-hidden="true">✳</div>
-            <div class="architecture" id="architecture" aria-hidden="true"></div>
-            <div class="room-portal" id="roomPortal">
-              <div class="portal-sigil" aria-hidden="true">✳</div>
-              <div class="portal-frame" aria-hidden="true"><div class="portal-light"></div><span>EXIT</span><strong class="portal-granted">AUTHORISATION GRANTED</strong></div>
-              <button id="enterExit" class="portal-action" type="button" hidden>ENTER THE EXIT <span aria-hidden="true">↗</span></button>
-            </div>
-          </div>
-          <div class="law-board" id="lawBoard">
-            <div class="law-topline"><span>THE DEPARTMENT OF ABSOLUTE TRUTHS</span><span>LAW / 000</span></div>
-            <div class="law-rule law-rule-primary" id="primaryRule">
-              <span class="law-label">OFFICIAL DECISION</span>
-              <p>YOU ARE <button id="notToken" class="word-token" type="button" aria-pressed="false" aria-describedby="puzzleHint" draggable="false">NOT</button><br/><span>AUTHORISED TO LEAVE.</span></p>
-            </div>
-            <div class="law-rule law-rule-secondary" id="secondaryRule">
-              <span class="law-label">YOUR DECLARATION</span>
-              <p>I DO <button id="notSlot" class="word-slot" type="button" aria-label="Empty space in declaration" aria-describedby="puzzleHint"><span id="slotText">_ _ _</span></button><br/><span>ACCEPT THE TERMS.</span></p>
-            </div>
-            <div class="law-board-bottom" id="worldCaption" role="status" aria-live="polite">THE DOOR RECOGNISES ONLY WRITTEN LAW.</div>
-          </div>
-        </div>
-      </div>
+      </article>
     </section>
-
-    <section class="act act-escaped" id="escapedAct" hidden aria-labelledby="escapedTitle">
-      <div class="escape-halo" aria-hidden="true"></div>
-      <div class="escape-content"><div class="kicker kicker-escaped">SYSTEM STATUS / IRRELEVANT</div><span class="escape-symbol" aria-hidden="true">✳</span><h2 id="escapedTitle">You are <em>not</em><br />a form.</h2><p>Congratulations, <span id="escapeName">APPLICANT</span>.<br />Your existence has been returned to you.</p><button type="button" class="replay-button" id="restartButton">TRY EXISTING AGAIN <span aria-hidden="true">↗</span></button></div>
-    </section>
+    <footer class="control-bar">
+      <div class="control-buttons"><button type="button" id="undoButton" class="utility-button">↶ UNDO</button><button type="button" id="resetButton" class="utility-button">↺ RESET CASE</button></div>
+      <p class="feedback" id="feedback" aria-live="polite" role="status">Select a word, then select another to swap them.</p>
+      <div class="control-right"><span class="move-count" id="moves">0 MOVES</span><button type="button" class="next-button" id="nextButton" hidden>NEXT CASE →</button><button type="button" class="next-button" id="replayButton" hidden>REPLAY →</button></div>
+    </footer>
   </main>
-  <footer class="bottom-bar"><span>NO. 001 / SYLLOGISM OF THE DAMNED</span><span id="statusText" aria-live="polite" role="status">Awaiting applicant.</span><button id="resetAnytime" class="text-reset" type="button" hidden>START OVER ↺</button></footer>
 </body>
 </html>
