@@ -34,25 +34,26 @@ function closure(initial, rules) {
 
 /** Puzzle 1: second rule creates ESCORTED and standing rule creates AUTHORISED.
  * A CLERK token in R1 is procedurally invalid: the Bureau's standing limitation
- * prohibits using a staff classification as a detention predicate. This is
- * deliberately visible in the game; it is *not* an unannounced inference rule.
+ * prohibits using a staff classification as a detention predicate. This
+ * invalidates the whole Form L-12: no rule on that form may be relied on.
+ * The limitation is visible in the game and requires historical spec review.
  */
 export function evaluate(puzzle, slots){
   if (!isValidSlots(puzzle,slots)) throw new TypeError('Invalid puzzle or class configuration');
   if(puzzle===1){
     const [r1,r2] = slots;
     const eligible = r1 !== 'CLERK';
-    const rules=[
-      ...(eligible?[{id:'R1',from:r1,to:'DETAINED'}]:[]),
+    const rules=eligible?[
+      {id:'R1',from:r1,to:'DETAINED'},
       {id:'R2',from:r2,to:'ESCORTED'},
       {id:'SR',from:'ESCORTED',to:'AUTHORISED'}
-    ];
+    ]:[];
     const {facts,trace}=closure(['APPLICANT'],rules);
     const detained=facts.includes('DETAINED');
     const authorised=facts.includes('AUTHORISED');
     const outcome=detained?'DETAINED':authorised && eligible?'GOAL':'UNSUPPORTED';
     const explanation = !eligible
-      ? 'R1 is void. Standing limitation: Bureau staff cannot be named in a detention rule.'
+      ? 'Form L-12 is void. Standing limitation: Bureau staff cannot be named in a detention rule.'
       : detained?'R1 establishes detention. The Bureau will not release Avery.'
       : authorised?'The record proves ESCORTED, then AUTHORISED. Release is permitted.'
       : 'No rule proves detention or authorisation for Avery.';
