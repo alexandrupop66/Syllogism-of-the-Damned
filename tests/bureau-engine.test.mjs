@@ -4,7 +4,7 @@ import {evaluate,initialState,selectSlot,swapSlots,undo,reset,submit,nextCase,ou
 
 test('puzzle 1 initial detention is proven',()=>{let v=evaluate(1,START_1);assert.equal(v.outcome,'DETAINED');assert.ok(v.trace.some(t=>t.subject==='DETAINED'));});
 test('puzzle 1 one swap opens the exit',()=>{let s=swapSlots(initialState(1),0,1);assert.equal(evaluate(1,s.slots).outcome,'GOAL');assert.equal(distanceToGoal(1,START_1),1);});
-test('puzzle 1 R1 staffing limitation is explicit',()=>{let v=evaluate(1,['CLERK','APPLICANT','VISITOR']);assert.equal(v.outcome,'UNSUPPORTED');assert.equal(v.ruleValid,false);});
+test('puzzle 1 R1 staffing limitation is explicit',()=>{let v=evaluate(1,['CLERK','APPLICANT','VISITOR']);assert.equal(v.outcome,'UNSUPPORTED');assert.equal(v.ruleValid,false);assert.equal(v.authorised,false);assert.deepEqual(v.facts,['APPLICANT']);});
 test('puzzle 1 exhaustive counts match contract',()=>assert.deepEqual(outcomeCounts(1),{DETAINED:2,UNSUPPORTED:3,CONTRADICTION:0,GOAL:1}));
 test('puzzle 2 initial detention is proven',()=>{let v=evaluate(2,START_2);assert.equal(v.outcome,'DETAINED');assert.equal(v.authorised,false);});
 test('puzzle 2 exhaustive counts match contract',()=>assert.deepEqual(outcomeCounts(2),{DETAINED:10,UNSUPPORTED:10,CONTRADICTION:2,GOAL:2}));
